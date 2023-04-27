@@ -2,7 +2,7 @@ from transformers import ViTImageProcessor, ViTForImageClassification
 from PIL import Image
 import requests
 
-url = 'https://cdn.mos.cms.futurecdn.net/h6tZjYTzb6NJxVN2RHvo2M.jpg'
+url = 'https://wallpaperaccess.com/full/275902.jpg'
 image = Image.open(requests.get(url, stream=True).raw)
 
 processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')

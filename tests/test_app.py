@@ -4,6 +4,9 @@ from app import app, process_image
 import unittest
 
 class TestApp(unittest.TestCase):
+    
+    def setup_method(self):
+        self.app = app.test_client()
 
     def setUp(self):
         self.app = app.test_client()

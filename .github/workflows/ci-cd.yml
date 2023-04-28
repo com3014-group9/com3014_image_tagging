@@ -1,55 +1,43 @@
-name: Flask CI/CD
+name: CI Pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - main
+      - dev
+
+  pull_request:
+    branches:
+      - main
+      - dev
+
+  workflow_dispatch:
 
 jobs:
+
   build-and-test:
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Test
-      run: |
-        python -m unittest discover
-    - name: Create artifact
-      run: |
-        zip -r app.zip app.py
 
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - uses: actions/checkout@v2
+
+    - name: Build Docker Image
+      run: docker build -t com3014_image_tagging .
+
+    - name: Run Unit Tests
+      run: docker run com3014_image_tagging python3 -m pytest
+
+    - name: Make Test Request
+      run: |
+        docker run -d --name my_flask_app com3014_image_tagging
+        sleep 5
+        curl -X POST localhost:5000/upload
+        docker stop my_flask_app
+
+    - name: Trigger Main Workflow
+      if: github.ref == 'refs/heads/main'
+      uses: peter-evans/repository-dispatch@v2
       with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Copy code to server
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USERNAME }}
-        key: ${{ secrets.SERVER_KEY }}
-        source: app.zip
-        target: /home/ubuntu/app.zip
-    - name: Unzip code
-      run: |
-        ssh ubuntu@${{ secrets.SERVER_HOST }} -i ${{ secrets.SERVER_KEY }} 'cd /home/ubuntu && unzip -o app.zip'
-    - name: Restart application
-      run: |
-        ssh ubuntu@${{ secrets.SERVER_HOST }} -i ${{ secrets.SERVER_KEY }} 'sudo systemctl restart app.service'
+        repository: com3014-group9/com3014_meowstagram
+        token: ${{ secrets.PAT }}
+        event-type: trigger-build

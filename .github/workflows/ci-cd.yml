@@ -22,17 +22,17 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build Docker Image
-      run: docker build -t com3014_image_tagging .
+      run: docker compose build
 
     - name: Run Unit Tests
-      run: docker run com3014_image_tagging python3 -m pytest
+      run: docker compose run com3014_image_tagging python3 -m pytest tests/
 
     - name: Make Test Request
       run: |
-        docker run -d --name my_flask_app com3014_image_tagging
+        docker compose up -d
         sleep 5
-        curl -X POST localhost:5000/upload
-        docker stop my_flask_app
+        curl -X POST localhost:5000/upload -F 'file=@/path/to/test_image.jpg'
+        docker compose down
 
     - name: Trigger Main Workflow
       if: github.ref == 'refs/heads/main'

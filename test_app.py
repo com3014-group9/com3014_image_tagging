@@ -6,4 +6,4 @@ def test_process_image():
     with open(file_path, 'rb') as f:
         image_bytes = f.read()
         tags = process_image(image_bytes)
-    assert tags == 'Egyptian Cat'
+    assert tags == 'Egyptian cat'

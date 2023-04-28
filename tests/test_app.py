@@ -24,4 +24,4 @@ class TestApp(unittest.TestCase):
         with open(file_path, 'rb') as f:
             image_bytes = f.read()
         tags = process_image(image_bytes)
-        self.assertEqual(tags, 'Egyptian Cat')
+        self.assertEqual(tags, 'Egyptian cat')

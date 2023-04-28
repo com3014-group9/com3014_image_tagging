@@ -17,8 +17,8 @@ class TestApp(unittest.TestCase):
     def test_process_image(self):
         with open('test_image.jpg', 'rb') as f:
             image_bytes = f.read()
-        class_label = process_image(image_bytes)
-        self.assertEqual(class_label, 'expected_class_label')
+        EgyptianCat = process_image(image_bytes)
+        self.assertEqual(EgyptianCat, 'expected_class_label')
 
 if __name__ == '__main__':
     unittest.main()

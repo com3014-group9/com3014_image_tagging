@@ -31,4 +31,4 @@ def upload_file():
 
 if __name__ == '__main__':
     # Start the Flask application with a specified port number
-    app.run(port=5000)
+    app.run(port=3303)

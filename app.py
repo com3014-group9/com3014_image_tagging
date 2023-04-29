@@ -21,6 +21,7 @@ def process_image(image_bytes):
 def upload_file():
     # Get the file from the POST request
     file = request.files['file']
+    print(file)
     image_bytes = file.read()
 
     tags = process_image(image_bytes)

@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  com3014imagetagging:
+    image: com3014imagetagging
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 3303:3303

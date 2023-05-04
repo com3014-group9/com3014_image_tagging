@@ -3,6 +3,8 @@ from io import BytesIO
 from transformers import ViTImageProcessor, ViTForImageClassification
 from PIL import Image
 
+#from auth_middleware import auth_required
+
 app = Flask(__name__)
 
 processor = ViTImageProcessor.from_pretrained('google/vit-base-patch16-224')
@@ -18,6 +20,7 @@ def process_image(image_bytes):
     return model.config.id2label[predicted_class_idx]
 
 @app.route('/upload', methods=['POST'])
+#@auth_required
 def upload_file():
     # Get the file from the POST request
     file = request.files['file']

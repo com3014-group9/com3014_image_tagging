@@ -38,7 +38,7 @@ def client():
 
 def test_upload_file(client):
     # Read the test image from the file system
-    with open('/Users/prashdev/Downloads/WallPapers/catsplash.jpeg','rb') as f:
+    with open('catsplash.jpeg','rb') as f:
         image_bytes = f.read()
 
     # Make a POST request with the test image

@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
@@ -10,59 +10,31 @@ on:
     branches:
       - main
       - development
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup Python
+    - uses: actions/checkout@v2
+    - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
-
-    - name: Install dependencies
+        python-version: '3.9'
+    - name: Install PyTorch
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-
-    - name: Test
+        python -m pip install torch torchvision
+    - name: Install Dependencies
       run: |
-        python -m pytest
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    env:
-      IMAGE_TAG: ${{ github.sha }}
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
+        python -m pip install -r requirements.txt
+    - name: Build Docker Image
+      run: docker compose build
+    - name: Run Unit Tests
+      run: docker compose run imager-app python3 -m pytest
+    - name: Trigger Main Workflow
+      if: github.ref == 'refs/heads/main'
+      uses: peter-evans/repository-dispatch@v2
       with:
-        username: ${{ env.DOCKERHUB_USERNAME }}
-        password: ${{ env.DOCKERHUB_TOKEN }}
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{ env.DOCKERHUB_USERNAME }}/my-flask-app:${{ env.IMAGE_TAG }}
-
-    - name: Deploy to Kubernetes
-      uses: appleboy/kubectl-action@master
-      with:
-        args: |
-          apply -f k8s/app-deployment.yml
-
+        repository: com3014-group9/com3014_meowstagram
+        token: ${{ secrets.PAT }}
+        event-type: trigger-build

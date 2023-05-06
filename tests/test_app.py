@@ -1,52 +1,46 @@
 import io
-import pytest
 import os
-from app import app
+import requests
+import unittest
 
-""" @pytest.fixture
-def client():
-    with app.test_client() as client:
-        yield client
+from PIL import Image
+from app import app, process_image
 
-#Test case 1 - Positive Upload:
-def test_upload_file(client):
-    print("Inside test upload func")
-    # Test Image path from file system
-    with open('/Users/prashdev/Downloads/WallPapers/catsplash.jpeg','rb') as img:
-        img_bin = img.read()
+class TestApp(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
+        self.app.testing = True
 
+    def test_upload_file(self):
+        # Load test image
+        img_path = os.path.join(os.getcwd(), "tests", "test_image.jpg")
+        with open(img_path, "rb") as f:
+            image_bytes = f.read()
 
- # Make a POST request with the image file
-    response = client.post('/upload', data={'file': (io.BytesIO(img_bin), 'catsplash.jpeg')}, content_type='multipart/form-data')
+        # POST request to upload the test image
+        response = self.app.post("/upload", content_type='multipart/form-data',
+                                 data={"file": (io.BytesIO(image_bytes), "test_image.jpg")})
 
-# Check the response
-    assert response.status_code == 200
-    assert response.data == b'Success'
-    print(response)
+        # Check if the response status code is 200 OK
+        self.assertEqual(response.status_code, 200)
 
+        # Check if the response body is not empty
+        self.assertTrue(response.data)
 
-    # Delete the test file
-    os.remove('path/to/test_image.jpg')
+        # Check if the predicted tags match the expected tags
+        expected_tags = ["bicycle", "unicycle", "mountain bike", "tricycle"]
+        self.assertTrue(all(tag in response.get_data(as_text=True) for tag in expected_tags))
+        
+    def test_process_image(self):
+        # Load test image
+        img_path = os.path.join(os.getcwd(), "tests", "test_image.jpg")
+        with open(img_path, "rb") as f:
+            image_bytes = f.read()
 
- """    
+        # Call process_image function and check if the predicted tags match the expected tags
+        expected_tags = ["bicycle", "unicycle", "mountain bike", "tricycle"]
+        predicted_tags = process_image(image_bytes)
+        self.assertTrue(all(tag in predicted_tags for tag in expected_tags))
 
-@pytest.fixture
-def client():
-    with app.test_client() as client:
-        yield client
-
-
-def test_upload_file(client):
-    # Read the test image from the file system
-    with open('/Users/prashdev/Downloads/WallPapers/catsplash.jpeg','rb') as f:
-        image_bytes = f.read()
-
-    # Make a POST request with the test image
-    response = client.post('/upload', data={'file': (io.BytesIO(image_bytes), 'test_image.jpg')},
-                           content_type='multipart/form-data')
-
-    # Check the response
-    assert response.status_code == 200
-    predicted_label = response.get_data(as_text=True).strip().decode()
-    #assert predicted_label == 'label'
-    print(predicted_label)
+if __name__ == '__main__':
+    unittest.main()

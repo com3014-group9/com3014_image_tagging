@@ -30,7 +30,7 @@ jobs:
     - name: Build Docker Image
       run: docker compose build
     - name: Run Unit Tests
-      run: docker compose run imager-app python3 -m pytest
+      run: docker compose run com3014imagetagging python3 -m pytest
     - name: Trigger Main Workflow
       if: github.ref == 'refs/heads/main'
       uses: peter-evans/repository-dispatch@v2

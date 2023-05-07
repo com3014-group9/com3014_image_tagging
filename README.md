@@ -1,42 +1,35 @@
-Sure! Here's an example README file for the updated code:
+Sure! Here's an example of how you could update the README file for your application to include the exposed ports:
 
 # Image Tagging Service
 
-This is a Flask application that provides a RESTful API for image tagging. Given an image, the application uses a pre-trained Vision Transformer model (ViT) to predict the image's content and return the predicted tags to the client.
+The Image Tagging Service is a Flask application that provides an API for tagging images using a Vision Transformer (ViT) model. The service requires user authentication before allowing access to the tagging endpoint.
 
 ## Installation
 
-1. Clone this repository.
-2. Install the required dependencies with `pip install -r requirements.txt`.
+To install the Image Tagging Service, you can use Docker Compose. Run the following command from the root directory of the project:
+
+```bash
+docker-compose up
+```
+
+This will build and start two containers: one for the image tagging service, and one for MongoDB.
 
 ## Usage
 
-1. Start the application with `python app.py`.
-2. Send a POST request to the `/get_tags` endpoint with an image file attached as `file`. The response will contain a JSON object with the predicted tags.
-
-For example, using the `curl` command-line tool:
-
-```
-curl -X POST -H "Authorization: Bearer <your-access-token>" -F "file=@/path/to/image.jpg" http://localhost:3304/get_tags
-```
+The Image Tagging Service API is accessible at `http://localhost:3304`. You can use any HTTP client to interact with the API.
 
 ### Authentication
 
-Access to the API requires authentication. Send an HTTP `Authorization` header with a bearer token to the API endpoints.
+The Image Tagging Service requires user authentication before allowing access to the tagging endpoint. To authenticate, you must first create a user account. You can create a user account by sending a POST request to `http://localhost:3304/users` with a JSON payload containing the `username` and `password` fields.
 
-To generate a bearer token for testing purposes, you can use the `/generate_token` endpoint with a valid user ID:
+Once you have created a user account, you can authenticate by sending a POST request to `http://localhost:3304/login` with a JSON payload containing the `username` and `password` fields. The response will include an access token that you can use to access the tagging endpoint.
 
-```
-curl -X POST -d '{"user_id": 123}' -H "Content-Type: application/json" http://localhost:3304/generate_token
-```
+### Tagging Images
 
-This will return a JSON object with a `token` field, which you can use as the bearer token in subsequent requests.
+To tag an image, you must first authenticate and obtain an access token. Once you have an access token, you can send a POST request to `http://localhost:3304/get_tags` with a `multipart/form-data` payload containing the image file.
 
-## Testing
+The `get_tags` endpoint returns the predicted image tag as a string.
 
-1. Install the required testing dependencies with `pip install -r requirements-test.txt`.
-2. Run the tests with `pytest`.
+## Contributing
 
-## Acknowledgements
-
-This application uses the Hugging Face Transformers library for image processing and classification.
+If you would like to contribute to the Image Tagging Service, please submit a pull request.

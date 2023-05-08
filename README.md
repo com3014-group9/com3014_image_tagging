@@ -1,5 +1,3 @@
-Sure! Here's an example of how you could update the README file for your application to include the exposed ports:
-
 # Image Tagging Service
 
 The Image Tagging Service is a Flask application that provides an API for tagging images using a Vision Transformer (ViT) model. The service requires user authentication before allowing access to the tagging endpoint.

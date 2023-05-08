@@ -8,3 +8,8 @@ services:
       dockerfile: ./Dockerfile
     ports:
       - 3303:3303
+    networks:
+      - com3014_image_storage_image-net
+networks:
+  com3014_image_storage_image-net:
+    external: true

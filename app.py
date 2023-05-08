@@ -22,6 +22,7 @@ def process_image(image_bytes):
 @app.route('/get_tags', methods=['POST']) #changed /path name
 @auth_required
 def upload_file(user_id):
+    print("MEOW", user_id)
     # Get the file from the POST request
     file = request.files['file']
     print(file)
@@ -30,7 +31,7 @@ def upload_file(user_id):
     tags = process_image(image_bytes)
 
     # Return a response to the client
-    return tags
+    return {"tags" : tags}, 200
 
 if __name__ == '__main__':
     # Start the Flask application with a specified port number

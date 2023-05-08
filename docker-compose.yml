@@ -6,5 +6,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    command: python -u app.py
     ports:
       - 3303:3303

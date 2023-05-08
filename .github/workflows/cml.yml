@@ -26,6 +26,8 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Build Docker Image
       run: docker compose build
+    - name: Add network
+      run: docker network create com3014_image_storage_image-net
     - name: Run Unit Tests
       run: docker compose run com3014imagetagging python3 -m pytest
     - name: Trigger Main Workflow
